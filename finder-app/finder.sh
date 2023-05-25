@@ -28,7 +28,7 @@ X=$(find "$filesdir" -type f | wc -l)
  echo "Files in #filesdir is $X "
  
 # Search for the given string in each file within the directory
-Y=$(find "$filesdir" -type f -exec cat {} + | grep -c "$searchstr")	
+Y=$(grep -r -c "$searchstr" "$filesdir" | awk -F':' '{sum += $2} END {print sum}') #was failing for some reason needed awk 	
 
 echo The number of files are $X and the number of matching lines are $Y
 
