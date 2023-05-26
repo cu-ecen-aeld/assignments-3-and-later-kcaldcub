@@ -1,4 +1,13 @@
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <fcntl.h>
 #include "systemcalls.h"
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <errno.h>
+#include <string.h> 
 
 /**
  * @param cmd the command to execute with system()
@@ -9,15 +18,30 @@
 */
 bool do_system(const char *cmd)
 {
-
 /*
  * TODO  add your code here
  *  Call the system() function with the command set in the cmd
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
-
-    return true;
+if (cmd==NULL)
+    	return false;
+    	
+int status;	
+int call= system(cmd) ;   /** 3 possible ouputs of sysytem()**/
+waitpid(0,&status,0);  /**wait until child process of system(cmd) is complete**/
+    
+    
+if (call==-1)	{    /**child not created or retrieved*/
+	fprintf(stderr,"Error with child process %d : %s",errno,strerror(errno));
+	return false;
+	}
+	
+else if (WIFEXITED(status) && WEXITSTATUS(status) == 127) {     /**shell not executed in child properly**/
+	fprintf(stderr, "Child shell terminated with status 127\n");
+	return false;
+        }
+return true; 
 }
 
 /**
@@ -48,8 +72,8 @@ bool do_exec(int count, ...)
     // this line is to avoid a compile warning before your implementation is complete
     // and may be removed
     command[count] = command[count];
-
-/*
+    va_end(args);
+/* 
  * TODO:
  *   Execute a system command by calling fork, execv(),
  *   and wait instead of system (see LSP page 161).
@@ -58,10 +82,21 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
+	pid_t pid = fork();  /**pid returned to parent, 0 to child =success. fail =-1**/	
+	if (pid==-1){
+		perror("Error in fork creation");
+		return false;
+	}
+	
+	else if (pid==0){
+	 execv(command[0],command); /** new process image**/
+	}
+	int status;
+	wait(&status);
 
-    va_end(args);
-
-    return true;
+	if (WIFEXITED(status) && EXIT_FAILURE == WEXITSTATUS(status))
+		return false;
+	return true;
 }
 
 /**
@@ -83,7 +118,7 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
     // this line is to avoid a compile warning before your implementation is complete
     // and may be removed
     command[count] = command[count];
-
+    va_end(args);
 
 /*
  * TODO
@@ -93,7 +128,34 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
  *
 */
 
-    va_end(args);
-
-    return true;
-}
+int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);  /**for redirect to outputfile**/
+  if (fd < 0) { 
+	perror("file open err"); 
+	return false; 					    /**if cant open outputfile**/
+	}
+  
+  pid_t pid = fork(); 			  /**new child process**/	
+  	
+	if (pid==-1){
+		perror("Error in fork creation");
+		return false;
+	}
+	
+	else if (pid==0){
+		if (dup2(fd, 1) < 0) {    /**from overlfow, if dup2 of fd prodcues error output**/
+			perror("dup2");             
+			abort(); 
+			}
+    		close(fd);
+	 	execv(command[0],command); /** execute child process given the command array input **/
+	}
+	
+	int status;
+	wait(&status);		   /**wait for child process completion**/
+	close(fd);			   /**close output file**/
+	
+	if (WIFEXITED(status) && EXIT_FAILURE == WEXITSTATUS(status))
+		return false;
+	return true;
+   }
+    
