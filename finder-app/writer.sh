@@ -1,5 +1,5 @@
 #!/bin/bash
-#
+
 #check if all inputs were given
 if [ "$#" -ne 2 ]; then
 	echo "Parameters not specified"
