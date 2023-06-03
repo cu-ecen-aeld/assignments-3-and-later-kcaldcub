@@ -1,2 +1,6 @@
+<<<<<<< HEAD
 kcald
 
+=======
+aesd-private-repo
+>>>>>>> buildroot-assignments-base/master
