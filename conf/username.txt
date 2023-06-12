@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-kcald
+kcaldcub
 
-=======
-aesd-private-repo
->>>>>>> buildroot-assignments-base/master
+
