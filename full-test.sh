@@ -9,6 +9,7 @@ test_dir=`pwd`
 echo "starting test with SKIP_BUILD=\"${SKIP_BUILD}\" and DO_VALIDATE=\"${DO_VALIDATE}\""
 
 # This part of the script always runs as the current user, even when
+#
 # executed inside a docker container.
 # See the logic in parse_docker_options for implementation
 logfile=test.sh.log
