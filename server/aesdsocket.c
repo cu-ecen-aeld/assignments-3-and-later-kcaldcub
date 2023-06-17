@@ -17,7 +17,7 @@
 #include <sys/wait.h>
 
 
-#define BACKLOG 10   // how many pending connections queue will hold
+#define BACKLOG 10   // how many pending connections in queue 
 #define MAXDATASIZE 65536 // max number of bytes we can get at once 
 #define MY_LOG_ERROR LOG_DEBUG//LOG_ERR
 
