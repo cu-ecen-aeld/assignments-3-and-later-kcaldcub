@@ -1,13 +1,13 @@
-CC = $(CROSS_COMPILE)gcc
+CC=gcc
+CFLAGS=-Wall
 
-CFLAGS  = -Wall -Werror
+SRC=aesdsocket.c
+OUTPUT=aesdsocket
 
-TARGET = aesdsocket
+all: clean $(OUTPUT)
 
-all: $(TARGET)
-
-$(TARGET): $(TARGET).c
-	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).c
+aesdsocket: $(SRC)
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -o $(OUTPUT) $(SRC)
 
 clean:
-	$(RM) $(TARGET) $(TARGET).o
+	rm -f $(OUTPUT)
