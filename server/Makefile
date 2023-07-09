@@ -1,13 +1,14 @@
-CC=gcc
-CFLAGS=-Wall
+CC = $(CROSS_COMPILE)gcc
 
-SRC=aesdsocket.c
-OUTPUT=aesdsocket
+CFLAGS  = -Wall -Werror
+LDFLAGS = -g -pthread -lrt
 
-all: clean $(OUTPUT)
+TARGET = aesdsocket
 
-aesdsocket: $(SRC)
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -o $(OUTPUT) $(SRC)
+all: $(TARGET)
+
+$(TARGET): $(TARGET).c
+	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).c $(LDFLAGS)
 
 clean:
-	rm -f $(OUTPUT)
+	$(RM) $(TARGET) $(TARGET).o
