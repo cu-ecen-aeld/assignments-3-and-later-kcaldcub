@@ -1,4 +1,3 @@
-
 APP ?= aesdsocket
 CFLAGS ?= -Wall -Werror -g -O0
 LDFLAGS ?= -lpthread -lrt
@@ -18,9 +17,18 @@ all : $(BINARY)
 
 $(BINARY) : $(OBJECTS)
 	$(CC) $^ -o $@ $(LDFLAGS)
+	sudo chown root $(BINARY)
+	sudo chmod +s $(BINARY)
 
 %.o:%.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 clean : 
 	rm -rf $(BINARY) $(OBJECTS)
+
+run:
+	@if [ $$(id -u) -eq 0 ]; then \
+		./$(BINARY); \
+	else \
+		sudo ./$(BINARY); \
+	fi
